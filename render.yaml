@@ -26,7 +26,6 @@ services:
     region: singapore
     rootDir: backend
     dockerfilePath: ./Dockerfile
-    healthCheckPath: /api/actuator/health
     autoDeployTrigger: commit
     disk:
       name: crop-care-uploads
