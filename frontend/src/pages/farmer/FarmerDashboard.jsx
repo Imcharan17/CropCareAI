@@ -1,11 +1,41 @@
+import { useEffect, useMemo, useState } from 'react';
 import { Upload, Ticket, FileText, Bot } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import StatCard from '../../components/StatCard.jsx';
+import { api } from '../../api/client.js';
 
 export default function FarmerDashboard() {
+  const [reports, setReports] = useState([]);
+  const [tickets, setTickets] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    Promise.all([
+      api.get('/reports?size=100'),
+      api.get('/tickets?size=100'),
+    ]).then(([reportsResponse, ticketsResponse]) => {
+      setReports(Array.isArray(reportsResponse.data) ? reportsResponse.data : []);
+      setTickets(ticketsResponse.data.content || []);
+    }).catch(() => {
+      setReports([]);
+      setTickets([]);
+    }).finally(() => setLoading(false));
+  }, []);
+
+  const stats = useMemo(() => {
+    const diseaseScans = reports.length;
+    const aiTickets = tickets.length;
+    const resolvedCases = reports.filter((report) => report.currentStatus === 'Resolved' || report.ticketStatus === 'RESOLVED' || report.ticketStatus === 'CLOSED').length;
+    const aiReplies = tickets.filter((ticket) => ticket.treatmentRecommendation).length;
+    return { diseaseScans, aiTickets, resolvedCases, aiReplies };
+  }, [reports, tickets]);
+
   return <div className="grid gap-4">
     <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-      <StatCard label="Disease scans" value="18" /><StatCard label="AI tickets" value="3" /><StatCard label="Resolved cases" value="12" /><StatCard label="AI replies" value="6" />
+      <StatCard label="Disease scans" value={loading ? '...' : stats.diseaseScans} />
+      <StatCard label="AI tickets" value={loading ? '...' : stats.aiTickets} />
+      <StatCard label="Resolved cases" value={loading ? '...' : stats.resolvedCases} />
+      <StatCard label="AI replies" value={loading ? '...' : stats.aiReplies} />
     </div>
     <section className="panel">
       <h3 className="text-xl font-semibold">Field Command Center</h3>
