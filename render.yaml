@@ -19,18 +19,15 @@ services:
           name: crop-care-frontend
           envVarKey: RENDER_EXTERNAL_URL
 
-  - type: pserv
+  - type: web
     name: crop-care-backend
     runtime: docker
-    plan: starter
+    plan: free
     region: singapore
     rootDir: backend
     dockerfilePath: ./Dockerfile
+    healthCheckPath: /api/actuator/health
     autoDeployTrigger: commit
-    disk:
-      name: crop-care-uploads
-      mountPath: /app/uploads
-      sizeGB: 1
     envVars:
       - key: SPRING_PROFILES_ACTIVE
         value: local
