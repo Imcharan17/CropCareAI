@@ -8,11 +8,8 @@ services:
     dockerfilePath: ./Dockerfile
     autoDeployTrigger: commit
     envVars:
-      - key: BACKEND_HOSTPORT
-        fromService:
-          type: web
-          name: crop-care-backend
-          property: hostport
+      - key: BACKEND_URL
+        value: https://crop-care-backend-f1md.onrender.com
       - key: FRONTEND_PUBLIC_URL
         fromService:
           type: web
