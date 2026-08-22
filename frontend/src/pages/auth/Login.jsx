@@ -7,7 +7,7 @@ import { api } from '../../api/client.js';
 import { setCredentials } from '../../features/auth/authSlice.js';
 
 export default function Login() {
-  const [form, setForm] = useState({ email: 'admin@crop.ai', password: 'Password@123' });
+  const [form, setForm] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
   const dispatch = useDispatch();
   const navigate = useNavigate();
