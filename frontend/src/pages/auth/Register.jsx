@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../../api/client.js';
+import { getApiErrorMessage, useNotification } from '../../components/NotificationProvider.jsx';
 import { setCredentials } from '../../features/auth/authSlice.js';
 import { AuthFrame } from './Login.jsx';
 
@@ -18,34 +19,22 @@ export default function Register() {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { notify } = useNotification();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   async function submit(event) {
     event.preventDefault();
 
+    setIsSubmitting(true);
     try {
-      console.log('Register Request:', JSON.stringify(form, null, 2));
-
       const response = await api.post('/auth/register', form);
-
-      console.log('Register Success:', response.data);
-
       dispatch(setCredentials(response.data));
+      notify('Account created successfully. Welcome to CropCare AI.', 'success');
       navigate('/');
     } catch (error) {
-      console.error('Register Error:', error);
-
-      if (error.response) {
-        console.log('Status:', error.response.status);
-        console.log('Data:', error.response.data);
-
-        alert(
-          typeof error.response.data === 'string'
-            ? error.response.data
-            : JSON.stringify(error.response.data, null, 2)
-        );
-      } else {
-        alert(error.message);
-      }
+      notify(getApiErrorMessage(error, 'Unable to create the account. Please try again.'), 'error');
+    } finally {
+      setIsSubmitting(false);
     }
   }
 
@@ -125,8 +114,8 @@ export default function Register() {
           required
         />
 
-        <button type="submit" className="btn">
-          Register
+        <button type="submit" className="btn" disabled={isSubmitting}>
+          {isSubmitting ? 'Creating account...' : 'Register'}
         </button>
       </form>
     </AuthFrame>

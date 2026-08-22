@@ -4,29 +4,33 @@ import { useDispatch } from 'react-redux';
 import { motion } from 'framer-motion';
 import { Leaf, LogIn } from 'lucide-react';
 import { api } from '../../api/client.js';
+import { getApiErrorMessage, useNotification } from '../../components/NotificationProvider.jsx';
 import { setCredentials } from '../../features/auth/authSlice.js';
 
 export default function Login() {
   const [form, setForm] = useState({ email: '', password: '' });
-  const [error, setError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { notify } = useNotification();
   async function submit(event) {
     event.preventDefault();
+    setIsSubmitting(true);
     try {
       const { data } = await api.post('/auth/login', form);
       dispatch(setCredentials(data));
       navigate('/');
-    } catch {
-      setError('Invalid credentials or blocked account');
+    } catch (error) {
+      notify(getApiErrorMessage(error, 'Invalid credentials or blocked account.'), 'error');
+    } finally {
+      setIsSubmitting(false);
     }
   }
   return <AuthFrame title="Welcome back" subtitle="Secure access for admins, farmers and agriculture experts">
     <form onSubmit={submit} className="grid gap-3">
       <input className="input" placeholder="Email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
       <input className="input" placeholder="Password" type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} />
-      {error && <p className="text-sm text-red-300">{error}</p>}
-      <button className="btn"><LogIn size={17} /> Login</button>
+      <button className="btn" disabled={isSubmitting}><LogIn size={17} /> {isSubmitting ? 'Signing in...' : 'Login'}</button>
       <div className="flex justify-between text-sm text-white/60"><Link to="/register">Create farmer account</Link><Link to="/forgot-password">Forgot password</Link></div>
     </form>
   </AuthFrame>;
