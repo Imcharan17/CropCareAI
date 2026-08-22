@@ -29,10 +29,29 @@ services:
     healthCheckPath: /api/actuator/health
     autoDeployTrigger: commit
     envVars:
-      - key: DB_URL
+      # Override the previous `local` profile so the service never selects H2.
+      - key: SPRING_PROFILES_ACTIVE
+        value: production
+      - key: DB_HOST
         fromDatabase:
           name: crop-care-db
-          property: connectionString
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: crop-care-db
+          property: port
+      - key: DB_NAME
+        fromDatabase:
+          name: crop-care-db
+          property: database
+      - key: DB_USERNAME
+        fromDatabase:
+          name: crop-care-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: crop-care-db
+          property: password
       - key: JWT_SECRET
         generateValue: true
       - key: UPLOAD_DIR
