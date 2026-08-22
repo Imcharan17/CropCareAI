@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { AlertCircle, CheckCircle2, Loader2, RefreshCw, UploadCloud } from 'lucide-react';
 import { api } from '../../api/client.js';
 
@@ -8,6 +9,7 @@ export default function DiseaseDetection() {
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const navigate = useNavigate();
 
   function onImageChange(file) {
     setResult(null);
@@ -72,12 +74,12 @@ export default function DiseaseDetection() {
         <Loader2 className="mb-3 animate-spin text-field" size={34} />
         <span>Checking visible symptoms and treatment options...</span>
       </div>}
-      {!loading && result ? <PredictionResult result={result} /> : !loading && <p className="mt-4 text-white/60">Results will include disease name, confidence, affected area, severity, treatments and recovery time.</p>}
+      {!loading && result ? <PredictionResult result={result} onRaiseTicket={() => navigate('/farmer/tickets', { state: { diseaseReportId: result.id } })} /> : !loading && <p className="mt-4 text-white/60">Results will include disease name, confidence, affected area, severity, treatments and recovery time.</p>}
     </section>
   </div>;
 }
 
-function PredictionResult({ result }) {
+function PredictionResult({ result, onRaiseTicket }) {
   const confidence = Math.round((result.confidenceScore || 0) * 100);
   return <div className="mt-4 grid gap-4 text-sm">
     <div className="rounded-lg border border-emerald-300/20 bg-emerald-400/10 p-4">
@@ -103,6 +105,7 @@ function PredictionResult({ result }) {
     <Info label="Organic treatment" value={result.organicTreatment} />
     <Info label="Prevention" value={result.preventionMeasures} />
     <Info label="Expected recovery time" value={result.expectedRecoveryTime} />
+    {result.id ? <button className="btn w-full sm:w-fit" onClick={onRaiseTicket}>Raise Ticket for This Detection</button> : null}
 
     {!!result.predictions?.length && <div className="rounded-md bg-white/5 p-3">
       <p className="text-white/50">Possible matches</p>
