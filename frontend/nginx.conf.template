@@ -3,9 +3,11 @@ server {
   server_name _;
   root /usr/share/nginx/html;
   index index.html;
+  resolver ${NGINX_LOCAL_RESOLVERS} valid=30s ipv6=off;
+  set $backend_upstream "${BACKEND_HOSTPORT}";
 
   location /api/ {
-    proxy_pass ${BACKEND_URL}/api/;
+    proxy_pass http://$backend_upstream/api/;
     proxy_http_version 1.1;
     proxy_set_header Upgrade $http_upgrade;
     proxy_set_header Connection "upgrade";

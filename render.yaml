@@ -8,11 +8,11 @@ services:
     dockerfilePath: ./Dockerfile
     autoDeployTrigger: commit
     envVars:
-      - key: BACKEND_URL
+      - key: BACKEND_HOSTPORT
         fromService:
           type: web
           name: crop-care-backend
-          envVarKey: RENDER_EXTERNAL_URL
+          property: hostport
       - key: FRONTEND_PUBLIC_URL
         fromService:
           type: web
