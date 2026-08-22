@@ -68,17 +68,19 @@ The default AI provider is deterministic mock inference. Set `APP_AI_PROVIDER=te
 This repository now includes a root `render.yaml` Blueprint for deploying on Render without changing the application frameworks:
 
 - `crop-care-frontend`: Docker web service serving the Vite build through Nginx
-- `crop-care-backend`: Docker private service running Spring Boot with the `local` profile and a persistent disk for uploads
+- `crop-care-backend`: Docker web service running Spring Boot
+- `crop-care-db`: Render Postgres database
 
 The Render deployment uses:
 
-- embedded H2 for the deployed backend profile
+- Render Postgres for persistent user and report data
 - generated `JWT_SECRET`
-- internal proxying from frontend to backend over Render private networking
+- frontend Nginx proxying to the backend public Render URL
 
 To deploy:
 
 1. Push this repository to GitHub.
 2. In Render, create a new Blueprint and point it at the repo.
 3. Sync the Blueprint.
-4. Open the `crop-care-frontend` service URL after the first deploy completes.
+4. Set `GEMINI_API_KEY` on the backend service in the Render dashboard.
+5. Open the `crop-care-frontend` service URL after the deploy completes.
