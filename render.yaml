@@ -1,0 +1,48 @@
+services:
+  - type: web
+    name: crop-care-frontend
+    runtime: docker
+    plan: free
+    region: singapore
+    rootDir: frontend
+    dockerfilePath: ./Dockerfile
+    autoDeployTrigger: commit
+    envVars:
+      - key: BACKEND_HOSTPORT
+        fromService:
+          type: pserv
+          name: crop-care-backend
+          property: hostport
+      - key: FRONTEND_PUBLIC_URL
+        fromService:
+          type: web
+          name: crop-care-frontend
+          envVarKey: RENDER_EXTERNAL_URL
+
+  - type: pserv
+    name: crop-care-backend
+    runtime: docker
+    plan: starter
+    region: singapore
+    rootDir: backend
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /api/actuator/health
+    autoDeployTrigger: commit
+    disk:
+      name: crop-care-uploads
+      mountPath: /app/uploads
+      sizeGB: 1
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: local
+      - key: JWT_SECRET
+        generateValue: true
+      - key: UPLOAD_DIR
+        value: /app/uploads
+      - key: APP_AI_PROVIDER
+        value: mock
+      - key: CORS_ORIGINS
+        fromService:
+          type: web
+          name: crop-care-frontend
+          envVarKey: FRONTEND_PUBLIC_URL

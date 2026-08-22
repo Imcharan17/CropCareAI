@@ -1,0 +1,61 @@
+services:
+  mysql:
+    image: mysql:8.4
+    container_name: crop-mysql
+    environment:
+      MYSQL_DATABASE: crop_portal
+      MYSQL_USER: crop_user
+      MYSQL_PASSWORD: crop_pass
+      MYSQL_ROOT_PASSWORD: root_pass
+    ports:
+      - "3306:3306"
+    volumes:
+      - crop_mysql:/var/lib/mysql
+      - ../database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+      - ../database/sample-data.sql:/docker-entrypoint-initdb.d/02-sample-data.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot_pass"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  backend:
+    build: ../backend
+    container_name: crop-backend
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      DB_URL: jdbc:mysql://mysql:3306/crop_portal?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      DB_USERNAME: crop_user
+      DB_PASSWORD: crop_pass
+      JWT_SECRET: change-this-very-long-secret-key-for-production-please-1234567890
+      CORS_ORIGINS: http://localhost:5173
+      APP_AI_PROVIDER: ${APP_AI_PROVIDER:-gemini}
+      BYNARA_API_KEY: ${BYNARA_API_KEY:-}
+      BYNARA_MODEL: ${BYNARA_MODEL:-mimo-v2.5-free}
+      BYNARA_ENDPOINT: ${BYNARA_ENDPOINT:-https://router.bynara.id/v1/chat/completions}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      GEMINI_MODEL: ${GEMINI_MODEL:-gemini-1.5-flash}
+    ports:
+      - "8080:8080"
+    volumes:
+      - crop_uploads:/app/uploads
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8080/api/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+
+  frontend:
+    build: ../frontend
+    container_name: crop-frontend
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "5173:80"
+
+volumes:
+  crop_mysql:
+  crop_uploads:

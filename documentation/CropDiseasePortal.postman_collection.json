@@ -1,0 +1,69 @@
+{
+  "info": {
+    "name": "Crop Disease Detection Portal",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Login",
+          "event": [{ "listen": "test", "script": { "exec": ["pm.collectionVariables.set('token', pm.response.json().token);", "pm.collectionVariables.set('refreshToken', pm.response.json().refreshToken);"] } }],
+          "request": { "auth": { "type": "noauth" }, "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "url": "{{baseUrl}}/auth/login", "body": { "mode": "raw", "raw": "{\"email\":\"admin@crop.ai\",\"password\":\"Password@123\"}" } }
+        },
+        {
+          "name": "Register Farmer",
+          "request": { "auth": { "type": "noauth" }, "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "url": "{{baseUrl}}/auth/register", "body": { "mode": "raw", "raw": "{\"fullName\":\"Demo Farmer\",\"email\":\"demo.farmer@example.com\",\"password\":\"Password@123\",\"role\":\"ROLE_FARMER\",\"farmLocation\":\"Mysuru\",\"primaryCrop\":\"Tomato\"}" } }
+        },
+        {
+          "name": "Refresh Token",
+          "request": { "auth": { "type": "noauth" }, "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "url": "{{baseUrl}}/auth/refresh-token", "body": { "mode": "raw", "raw": "{\"refreshToken\":\"{{refreshToken}}\"}" } }
+        },
+        {
+          "name": "Forgot Password",
+          "request": { "auth": { "type": "noauth" }, "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "url": "{{baseUrl}}/auth/forgot-password", "body": { "mode": "raw", "raw": "{\"email\":\"farmer@crop.ai\"}" } }
+        }
+      ]
+    },
+    {
+      "name": "Farmer",
+      "item": [
+        { "name": "Detect Disease", "request": { "method": "POST", "url": "{{baseUrl}}/disease/detect", "body": { "mode": "formdata", "formdata": [{ "key": "image", "type": "file", "src": "" }] } } },
+        { "name": "Disease History", "request": { "method": "GET", "url": "{{baseUrl}}/disease/history?size=20" } },
+        { "name": "Create Ticket", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "url": "{{baseUrl}}/tickets", "body": { "mode": "raw", "raw": "{\"title\":\"Tomato leaf infection\",\"description\":\"Please review the latest scan\",\"priority\":\"HIGH\"}" } } },
+        { "name": "List Tickets", "request": { "method": "GET", "url": "{{baseUrl}}/tickets?size=20" } },
+        { "name": "Ticket Messages", "request": { "method": "GET", "url": "{{baseUrl}}/tickets/{{ticketId}}/messages" } },
+        { "name": "Send Message", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "url": "{{baseUrl}}/tickets/{{ticketId}}/messages", "body": { "mode": "raw", "raw": "{\"message\":\"Please review my crop image\"}" } } }
+      ]
+    },
+    {
+      "name": "Administration",
+      "item": [
+        { "name": "Dashboard Analytics", "request": { "method": "GET", "url": "{{baseUrl}}/analytics/dashboard" } },
+        { "name": "List Users", "request": { "method": "GET", "url": "{{baseUrl}}/admin/users?size=100" } },
+        { "name": "Block User", "request": { "method": "PATCH", "url": "{{baseUrl}}/admin/users/{{userId}}/block?blocked=true" } },
+        { "name": "Audit Logs", "request": { "method": "GET", "url": "{{baseUrl}}/admin/audit-logs?size=50" } },
+        { "name": "Export CSV", "request": { "method": "GET", "url": "{{baseUrl}}/reports/export.csv" } },
+        { "name": "Export PDF", "request": { "method": "GET", "url": "{{baseUrl}}/reports/export.pdf" } }
+      ]
+    },
+    {
+      "name": "Notifications",
+      "item": [
+        { "name": "List Notifications", "request": { "method": "GET", "url": "{{baseUrl}}/notifications" } },
+        { "name": "Unread Count", "request": { "method": "GET", "url": "{{baseUrl}}/notifications/unread-count" } },
+        { "name": "Mark Read", "request": { "method": "PATCH", "url": "{{baseUrl}}/notifications/{{notificationId}}/read" } }
+      ]
+    }
+  ],
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080/api" },
+    { "key": "token", "value": "" },
+    { "key": "refreshToken", "value": "" },
+    { "key": "ticketId", "value": "1" },
+    { "key": "userId", "value": "1" },
+    { "key": "notificationId", "value": "1" }
+  ]
+}
