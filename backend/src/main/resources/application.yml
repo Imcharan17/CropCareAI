@@ -8,7 +8,9 @@ spring:
     name: crop-disease-portal
 
   datasource:
-    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:crop_care}
+    # Allow platforms/containers to provide a complete JDBC URL. Render's
+    # Blueprint supplies DB_HOST/DB_PORT/DB_NAME instead, so retain that fallback.
+    url: ${SPRING_DATASOURCE_URL:${DB_URL:jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:crop_care}}}
     username: ${DB_USERNAME:postgres}
     password: ${DB_PASSWORD:}
     driver-class-name: org.postgresql.Driver
