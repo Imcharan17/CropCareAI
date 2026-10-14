@@ -14,7 +14,8 @@ export default function Register() {
     phone: '',
     role: 'ROLE_FARMER',
     farmLocation: '',
-    primaryCrop: ''
+    primaryCrop: '',
+    specialization: ''
   });
 
   const dispatch = useDispatch();
@@ -41,7 +42,7 @@ export default function Register() {
   return (
     <AuthFrame
       title="Create account"
-      subtitle="Start crop diagnosis and AI support"
+      subtitle="Create your farmer account"
     >
       <form onSubmit={submit} className="grid gap-3">
         <input
@@ -75,33 +76,20 @@ export default function Register() {
           required
         />
 
-        <select
-          className="input"
-          value={form.role}
-          onChange={(e) =>
-            setForm({ ...form, role: e.target.value })
-          }
-        >
-          <option value="ROLE_FARMER">Farmer</option>
-        </select>
-
-        <input
-          className="input"
-          placeholder="Farm Location"
-          value={form.farmLocation}
-          onChange={(e) =>
-            setForm({ ...form, farmLocation: e.target.value })
-          }
-        />
-
-        <input
-          className="input"
-          placeholder="Primary Crop"
-          value={form.primaryCrop}
-          onChange={(e) =>
-            setForm({ ...form, primaryCrop: e.target.value })
-          }
-        />
+        <>
+          <input
+            className="input"
+            placeholder="Farm Location"
+            value={form.farmLocation}
+            onChange={(e) => setForm({ ...form, farmLocation: e.target.value })}
+          />
+          <input
+            className="input"
+            placeholder="Primary Crop"
+            value={form.primaryCrop}
+            onChange={(e) => setForm({ ...form, primaryCrop: e.target.value })}
+          />
+        </>
 
         <input
           className="input"

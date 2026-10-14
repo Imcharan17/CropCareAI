@@ -15,10 +15,12 @@ import org.springframework.transaction.annotation.Transactional;
 import com.cropportal.dto.AuthRequest;
 import com.cropportal.dto.AuthResponse;
 import com.cropportal.dto.ChangePasswordRequest;
+import com.cropportal.dto.CreateDoctorRequest;
 import com.cropportal.dto.ForgotPasswordRequest;
 import com.cropportal.dto.RefreshTokenRequest;
 import com.cropportal.dto.RegisterRequest;
 import com.cropportal.dto.ResetPasswordRequest;
+import com.cropportal.dto.UserResponse;
 import com.cropportal.entity.Doctor;
 import com.cropportal.entity.Farmer;
 import com.cropportal.entity.Role;
@@ -72,6 +74,10 @@ public class AuthServiceImpl implements AuthService {
     @Transactional
     public AuthResponse register(RegisterRequest request) {
 
+        if (request.role() != RoleName.ROLE_FARMER) {
+            throw new BadRequestException("Only administrators can create doctor accounts");
+        }
+
         if (userRepository.existsByEmail(request.email())) {
             throw new BadRequestException("Email already exists");
         }
@@ -101,16 +107,30 @@ public class AuthServiceImpl implements AuthService {
             farmerRepository.save(farmer);
         }
 
-        if (request.role() == RoleName.ROLE_DOCTOR) {
-
-            Doctor doctor = new Doctor();
-            doctor.setUser(user);
-            doctor.setSpecialization(request.specialization());
-
-            doctorRepository.save(doctor);
-        }
-
         return response(user);
+    }
+
+    @Override
+    @Transactional
+    public UserResponse createDoctor(CreateDoctorRequest request) {
+        if (userRepository.existsByEmail(request.email())) {
+            throw new BadRequestException("Email already exists");
+        }
+        Role role = roleRepository.findByName(RoleName.ROLE_DOCTOR)
+                .orElseThrow(() -> new BadRequestException("Doctor role not found"));
+        User user = new User();
+        user.setFullName(request.fullName());
+        user.setEmail(request.email());
+        user.setPassword(passwordEncoder.encode(request.password()));
+        user.setPhone(request.phone());
+        user.setRoles(new HashSet<>(Set.of(role)));
+        user = userRepository.save(user);
+
+        Doctor doctor = new Doctor();
+        doctor.setUser(user);
+        doctor.setSpecialization(request.specialization());
+        doctorRepository.save(doctor);
+        return UserResponse.from(user);
     }
 
     @Override

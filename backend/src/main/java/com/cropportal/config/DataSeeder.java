@@ -16,7 +16,6 @@ public class DataSeeder implements CommandLineRunner {
     private final RoleRepository roleRepository;
     private final UserRepository userRepository;
     private final FarmerRepository farmerRepository;
-    private final DoctorRepository doctorRepository;
     private final CropRepository cropRepository;
     private final PasswordEncoder passwordEncoder;
 
@@ -30,7 +29,6 @@ public class DataSeeder implements CommandLineRunner {
             });
         }
         seedAdmin();
-        seedDoctor();
         seedFarmer();
         if (cropRepository.count() == 0) {
             for (String name : List.of("Rice", "Wheat", "Tomato", "Potato", "Cotton")) {
@@ -47,17 +45,6 @@ public class DataSeeder implements CommandLineRunner {
         if (userRepository.existsByEmail("admin@crop.ai")) return;
         User user = base("Platform Admin", "admin@crop.ai", RoleName.ROLE_ADMIN);
         userRepository.save(user);
-    }
-
-    private void seedDoctor() {
-        if (userRepository.existsByEmail("doctor@crop.ai")) return;
-        User user = userRepository.save(base("Dr. Asha Verma", "doctor@crop.ai", RoleName.ROLE_DOCTOR));
-        Doctor doctor = new Doctor();
-        doctor.setUser(user);
-        doctor.setSpecialization("Plant pathology");
-        doctor.setLicenseNumber("AGR-2045");
-        doctor.setExperienceYears(9);
-        doctorRepository.save(doctor);
     }
 
     private void seedFarmer() {

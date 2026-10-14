@@ -2,7 +2,10 @@ package com.cropportal.controller;
 
 import com.cropportal.audit.AuditService;
 import com.cropportal.dto.UserResponse;
+import com.cropportal.dto.CreateDoctorRequest;
 import com.cropportal.repository.UserRepository;
+import com.cropportal.service.AuthService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,6 +20,15 @@ import org.springframework.web.bind.annotation.*;
 public class AdminController {
     private final UserRepository userRepository;
     private final AuditService auditService;
+    private final AuthService authService;
+
+    @PostMapping("/doctors")
+    public UserResponse createDoctor(Authentication authentication, @Valid @RequestBody CreateDoctorRequest request) {
+        UserResponse created = authService.createDoctor(request);
+        com.cropportal.entity.User actor = userRepository.findByEmail(authentication.getName()).orElse(null);
+        auditService.record(actor, "DOCTOR_CREATED", "USER", created.id(), created.email());
+        return created;
+    }
 
     @GetMapping
     public Page<UserResponse> users(Pageable pageable) {

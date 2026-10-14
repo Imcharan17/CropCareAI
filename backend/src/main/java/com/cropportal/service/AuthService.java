@@ -5,6 +5,7 @@ import com.cropportal.dto.*;
 public interface AuthService {
     AuthResponse login(AuthRequest request);
     AuthResponse register(RegisterRequest request);
+    UserResponse createDoctor(CreateDoctorRequest request);
     AuthResponse refresh(RefreshTokenRequest request);
     void forgotPassword(ForgotPasswordRequest request);
     void resetPassword(ResetPasswordRequest request);

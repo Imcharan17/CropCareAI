@@ -1,7 +1,6 @@
 package com.cropportal.config;
 
 import com.cropportal.websocket.WebSocketAuthChannelInterceptor;
-import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
@@ -11,9 +10,12 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 
 @Configuration
 @EnableWebSocketMessageBroker
-@RequiredArgsConstructor
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     private final WebSocketAuthChannelInterceptor authChannelInterceptor;
+
+    public WebSocketConfig(WebSocketAuthChannelInterceptor authChannelInterceptor) {
+        this.authChannelInterceptor = authChannelInterceptor;
+    }
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {

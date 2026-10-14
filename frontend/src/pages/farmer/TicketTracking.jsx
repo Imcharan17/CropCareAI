@@ -50,7 +50,7 @@ export default function TicketTracking() {
       setTickets((current) => [data, ...current]);
       setForm({ title: '', description: '', priority: 'MEDIUM', diseaseReportId: '' });
     } catch (err) {
-      setError(err.response?.data?.message || 'Could not raise the AI support ticket. Please try again.');
+      setError(err.response?.data?.message || 'Could not raise the doctor support request. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -61,8 +61,8 @@ export default function TicketTracking() {
       <div className="flex items-center gap-3">
         <div className="grid h-10 w-10 place-items-center rounded-md bg-field text-ink"><Bot size={20} /></div>
         <div>
-          <h3 className="text-xl font-semibold">Raise AI Support Ticket</h3>
-          <p className="text-sm text-white/55">AI will analyze your issue and resolve the ticket immediately.</p>
+          <h3 className="text-xl font-semibold">Ask a crop-care doctor</h3>
+          <p className="text-sm text-white/55">A doctor will review your case and post a treatment recommendation here. AI may provide preliminary notes.</p>
         </div>
       </div>
 
@@ -83,7 +83,7 @@ export default function TicketTracking() {
         </div>
         {error && <div className="flex items-start gap-2 rounded-md border border-red-400/30 bg-red-500/10 p-3 text-sm text-red-100"><AlertCircle size={18} /> <span>{error}</span></div>}
         <button className="btn w-full md:w-fit" disabled={loading}>
-          {loading ? <><Loader2 className="animate-spin" size={17} /> AI resolving ticket</> : <><Send size={17} /> Raise Ticket</>}
+          {loading ? <><Loader2 className="animate-spin" size={17} /> Sending request</> : <><Send size={17} /> Send to doctor</>}
         </button>
       </form>
     </section>
@@ -93,7 +93,7 @@ export default function TicketTracking() {
 
 export function TicketTable({ tickets }) {
   return <section className="panel">
-    <h3 className="text-xl font-semibold">AI Ticket Tracking</h3>
+    <h3 className="text-xl font-semibold">Doctor support requests</h3>
     <div className="mt-4 grid gap-3">
       {tickets.map((ticket) => <article key={ticket.id} className="rounded-md border border-white/10 bg-white/5 p-4">
         <div className="flex flex-wrap items-start justify-between gap-3">
@@ -104,9 +104,10 @@ export function TicketTable({ tickets }) {
           <div className="flex flex-wrap gap-2 text-xs">
             <span className="rounded-full bg-emerald-400/10 px-3 py-1 text-emerald-200"><CheckCircle2 size={13} className="mr-1 inline" />{ticket.status}</span>
             <span className="rounded-full bg-white/10 px-3 py-1 text-white/70">{ticket.priority}</span>
-            <span className="rounded-full bg-field/15 px-3 py-1 text-field">{ticket.supportAgentName || 'AI Support'}</span>
+            <span className="rounded-full bg-field/15 px-3 py-1 text-field">{ticket.doctorName && ticket.doctorName !== 'Unassigned' ? ticket.doctorName : 'Awaiting doctor'}</span>
           </div>
         </div>
+        {ticket.description && <p className="mt-3 whitespace-pre-line text-sm text-white/65">{ticket.description}</p>}
         {ticket.treatmentRecommendation && <div className="mt-4 whitespace-pre-line rounded-md bg-black/20 p-3 text-sm text-white/78">{ticket.treatmentRecommendation}</div>}
       </article>)}
       {!tickets.length && <p className="text-sm text-white/50">No tickets raised yet.</p>}

@@ -36,16 +36,22 @@ public class TicketController {
         return ticketService.assignDoctor(ticketId, doctorId);
     }
 
+    @PatchMapping("/{ticketId}/claim")
+    @PreAuthorize("hasRole('DOCTOR')")
+    public TicketResponse claim(Authentication authentication, @PathVariable Long ticketId) {
+        return ticketService.claim(ticketId, authentication.getName());
+    }
+
     @PatchMapping("/{ticketId}/status")
-    @PreAuthorize("hasRole('ADMIN')")
-    public TicketResponse status(@PathVariable Long ticketId, @RequestParam TicketStatus status,
+    @PreAuthorize("hasAnyRole('ADMIN', 'DOCTOR')")
+    public TicketResponse status(Authentication authentication, @PathVariable Long ticketId, @RequestParam TicketStatus status,
                                  @RequestParam(required = false) String recommendation) {
-        return ticketService.updateStatus(ticketId, status, recommendation);
+        return ticketService.updateStatus(ticketId, authentication.getName(), status, recommendation);
     }
 
     @GetMapping("/{ticketId}/messages")
-    public List<MessageResponse> messages(@PathVariable Long ticketId) {
-        return ticketService.messages(ticketId);
+    public List<MessageResponse> messages(Authentication authentication, @PathVariable Long ticketId) {
+        return ticketService.messages(ticketId, authentication.getName());
     }
 
     @PostMapping("/{ticketId}/messages")

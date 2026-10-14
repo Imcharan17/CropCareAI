@@ -22,18 +22,18 @@ export default function DoctorDashboard() {
   }, []);
 
   const summary = useMemo(() => {
-    const assigned = tickets.length;
+    const assigned = tickets.filter((ticket) => ticket.doctorName !== 'Unassigned').length;
     const resolved = tickets.filter((ticket) => ticket.status === 'RESOLVED' || ticket.status === 'CLOSED').length;
-    const open = tickets.filter((ticket) => ticket.status === 'OPEN' || ticket.status === 'UNDER_TREATMENT').length;
+    const open = tickets.filter((ticket) => ticket.status === 'OPEN' || ticket.status === 'AI_ANALYZED').length;
     const diseaseCoverage = Object.keys(analytics?.diseaseDistribution || {}).length;
     return { assigned, resolved, open, diseaseCoverage };
   }, [analytics, tickets]);
 
   return <div className="grid gap-4">
     <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-      <StatCard label="Assigned tickets" value={loading ? '...' : summary.assigned} />
+      <StatCard label="My assigned tickets" value={loading ? '...' : summary.assigned} />
       <StatCard label="Resolved tickets" value={loading ? '...' : summary.resolved} />
-      <StatCard label="Active cases" value={loading ? '...' : summary.open} />
+      <StatCard label="Cases waiting for a doctor" value={loading ? '...' : summary.open} />
       <StatCard label="Disease categories" value={loading ? '...' : summary.diseaseCoverage} />
     </div>
     <AnalyticsCharts data={analytics} loading={loading} />

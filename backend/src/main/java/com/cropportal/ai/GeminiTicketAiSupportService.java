@@ -90,9 +90,9 @@ public class GeminiTicketAiSupportService implements TicketAiSupportService {
 
     private String prompt(Farmer farmer, TicketRequest request, DiseaseReport report) {
         return """
-                You are the AI Support agronomist for a crop disease farmer portal.
-                Resolve this support ticket directly. Give practical farmer-safe guidance.
-                Do not mention doctors. Do not prescribe banned or exact high-risk chemical dosages.
+                You are an agronomy assistant supporting a doctor reviewing a farmer's crop case.
+                Provide preliminary, practical farmer-safe observations for the doctor to review.
+                Do not claim the case or ticket is resolved. Do not prescribe banned or exact high-risk chemical dosages.
                 Use this structure:
                 Diagnosis Summary:
                 Do This Today:
@@ -143,7 +143,7 @@ public class GeminiTicketAiSupportService implements TicketAiSupportService {
 
         return """
                 Diagnosis Summary:
-                Your ticket has been resolved by AI Support using the supplied details and linked disease report.
+                This is preliminary AI guidance. A doctor will review the case and provide the final recommendation.
 
                 Likely Issue:
                 %s. Current severity: %s.
@@ -154,7 +154,7 @@ public class GeminiTicketAiSupportService implements TicketAiSupportService {
                 3. Avoid overhead watering and keep the crop canopy ventilated.
 
                 Do This After 3 Days:
-                Check whether new leaf spots are reducing. If symptoms continue spreading, raise the status to UNDER_TREATMENT and follow local agriculture officer guidance.
+                Check whether new leaf spots are reducing. If symptoms continue spreading, update this ticket and contact the reviewing doctor or a local agriculture officer.
 
                 Avoid This:
                 Do not apply unknown chemical mixes, do not exceed label instructions, and do not irrigate directly over diseased leaves.
@@ -172,7 +172,7 @@ public class GeminiTicketAiSupportService implements TicketAiSupportService {
                 Review crop condition after 3 days and again after 7 days.
 
                 When To Escalate:
-                If symptoms spread quickly, fruit/stem damage appears, or the crop does not improve within 5-7 days, contact a local agriculture officer with this ticket report.
+                If symptoms spread quickly, fruit/stem damage appears, or the crop does not improve within 5-7 days, update this ticket and contact a local agriculture officer.
                 """.formatted(disease, severity, treatment, fertilizer, prevention);
     }
 

@@ -7,6 +7,7 @@ import { api } from '../../api/client.js';
 
 export default function Chat() {
   const token = useSelector((state) => state.auth.token);
+  const user = useSelector((state) => state.auth.user);
   const [tickets, setTickets] = useState([]);
   const [ticketId, setTicketId] = useState('');
   const [messages, setMessages] = useState([]);
@@ -16,11 +17,14 @@ export default function Chat() {
 
   useEffect(() => {
     api.get('/tickets?size=50').then(({ data }) => {
-      const items = data.content || [];
+      const allItems = data.content || [];
+      const items = user?.roles?.includes('ROLE_DOCTOR')
+        ? allItems.filter((ticket) => ticket.doctorName !== 'Unassigned')
+        : allItems;
       setTickets(items);
       if (items.length) setTicketId(String(items[0].id));
     });
-  }, []);
+  }, [user]);
 
   useEffect(() => {
     if (!ticketId) return undefined;
