@@ -2,10 +2,12 @@ import { useEffect, useMemo, useState } from 'react';
 import { Eye, LifeBuoy, Search } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../../api/client.js';
+import { useLanguage } from '../../i18n/LanguageContext.jsx';
 
 const emptyFilters = { crop: '', disease: '', status: '', from: '', to: '' };
 
 export default function DiseaseHistory() {
+  const { t } = useLanguage();
   const [items, setItems] = useState([]);
   const [filters, setFilters] = useState(emptyFilters);
   const [selected, setSelected] = useState(null);
@@ -31,16 +33,16 @@ export default function DiseaseHistory() {
 
   return <div className="grid gap-4">
     <section className="panel">
-      <h3 className="text-xl font-semibold">My Detection History</h3>
-      <p className="mt-1 text-sm text-white/55">Previous crop scans and AI recommendations, newest first.</p>
+      <h3 className="text-xl font-semibold">{t('My Detection History')}</h3>
+      <p className="mt-1 text-sm text-white/55">{t('Previous crop scans and AI recommendations, newest first.')}</p>
       <div className="mt-4 grid gap-3 md:grid-cols-5">
-        <select className="input" value={filters.crop} onChange={(e) => setFilters({ ...filters, crop: e.target.value })}><option value="">All crops</option>{options.crops.map((item) => <option key={item}>{item}</option>)}</select>
-        <select className="input" value={filters.disease} onChange={(e) => setFilters({ ...filters, disease: e.target.value })}><option value="">All diseases</option>{options.diseases.map((item) => <option key={item}>{item}</option>)}</select>
-        <select className="input" value={filters.status} onChange={(e) => setFilters({ ...filters, status: e.target.value })}><option value="">All status</option>{options.statuses.map((item) => <option key={item}>{item}</option>)}</select>
+        <select className="input" value={filters.crop} onChange={(e) => setFilters({ ...filters, crop: e.target.value })}><option value="">{t('All crops')}</option>{options.crops.map((item) => <option key={item}>{item}</option>)}</select>
+        <select className="input" value={filters.disease} onChange={(e) => setFilters({ ...filters, disease: e.target.value })}><option value="">{t('All diseases')}</option>{options.diseases.map((item) => <option key={item}>{item}</option>)}</select>
+        <select className="input" value={filters.status} onChange={(e) => setFilters({ ...filters, status: e.target.value })}><option value="">{t('All status')}</option>{options.statuses.map((item) => <option key={item}>{item}</option>)}</select>
         <input className="input" type="date" value={filters.from} onChange={(e) => setFilters({ ...filters, from: e.target.value })} />
         <input className="input" type="date" value={filters.to} onChange={(e) => setFilters({ ...filters, to: e.target.value })} />
       </div>
-      <div className="mt-3 flex gap-2"><button className="btn" onClick={() => load()}><Search size={17} /> Search</button><button className="btn-ghost" onClick={() => { setFilters(emptyFilters); load(emptyFilters); }}>Reset</button></div>
+      <div className="mt-3 flex gap-2"><button className="btn" onClick={() => load()}><Search size={17} /> {t('Search')}</button><button className="btn-ghost" onClick={() => { setFilters(emptyFilters); load(emptyFilters); }}>{t('Reset')}</button></div>
     </section>
 
     <section className="grid gap-3">
@@ -61,13 +63,13 @@ export default function DiseaseHistory() {
             </div>
             <p className="mt-3 text-sm text-white/75">{item.aiRecommendationSummary || item.treatmentSummary}</p>
             <div className="mt-4 flex flex-wrap gap-2">
-              <button className="btn-ghost" onClick={() => openDetails(item.reportId)}><Eye size={16} /> View Details</button>
-              {!item.ticketStatus && <button className="btn" onClick={() => navigate('/farmer/tickets', { state: { diseaseReportId: item.reportId } })}><LifeBuoy size={16} /> Raise Support Ticket</button>}
+              <button className="btn-ghost" onClick={() => openDetails(item.reportId)}><Eye size={16} /> {t('View Details')}</button>
+              {!item.ticketStatus && <button className="btn" onClick={() => navigate('/farmer/tickets', { state: { diseaseReportId: item.reportId } })}><LifeBuoy size={16} /> {t('Raise Support Ticket')}</button>}
             </div>
           </div>
         </div>
       </article>)}
-      {!items.length && <section className="panel text-white/55">No detection history yet.</section>}
+      {!items.length && <section className="panel text-white/55">{t('No detection history yet.')}</section>}
     </section>
 
     {selected && <Details report={selected} onClose={() => setSelected(null)} />}

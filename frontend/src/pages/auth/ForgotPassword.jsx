@@ -3,8 +3,10 @@ import { Mail } from 'lucide-react';
 import { api } from '../../api/client.js';
 import { getApiErrorMessage, useNotification } from '../../components/NotificationProvider.jsx';
 import { AuthFrame } from './Login.jsx';
+import { useLanguage } from '../../i18n/LanguageContext.jsx';
 
 export default function ForgotPassword() {
+  const { t } = useLanguage();
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { notify } = useNotification();
@@ -24,8 +26,8 @@ export default function ForgotPassword() {
 
   return <AuthFrame title="Reset access" subtitle="Recover access through the secure mail workflow">
     <form onSubmit={submit} className="grid gap-3">
-      <input className="input" placeholder="Registered email" value={email} onChange={(event) => setEmail(event.target.value)} />
-      <button className="btn" disabled={isSubmitting}><Mail size={17} /> {isSubmitting ? 'Sending...' : 'Send reset token'}</button>
+      <input className="input" placeholder={t('Registered email')} value={email} onChange={(event) => setEmail(event.target.value)} />
+      <button className="btn" disabled={isSubmitting}><Mail size={17} /> {isSubmitting ? t('Sending...') : t('Send reset token')}</button>
     </form>
   </AuthFrame>;
 }

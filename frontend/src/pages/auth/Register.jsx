@@ -5,8 +5,10 @@ import { api } from '../../api/client.js';
 import { getApiErrorMessage, useNotification } from '../../components/NotificationProvider.jsx';
 import { setCredentials } from '../../features/auth/authSlice.js';
 import { AuthFrame } from './Login.jsx';
+import { useLanguage } from '../../i18n/LanguageContext.jsx';
 
 export default function Register() {
+  const { t } = useLanguage();
   const [form, setForm] = useState({
     fullName: '',
     email: '',
@@ -33,7 +35,7 @@ export default function Register() {
       notify('Account created successfully. Welcome to CropCare AI.', 'success');
       navigate('/');
     } catch (error) {
-      notify(getApiErrorMessage(error, 'Unable to create the account. Please try again.'), 'error');
+      notify(getApiErrorMessage(error, t('Unable to create the account. Please try again.')), 'error');
     } finally {
       setIsSubmitting(false);
     }
@@ -47,7 +49,7 @@ export default function Register() {
       <form onSubmit={submit} className="grid gap-3">
         <input
           className="input"
-          placeholder="Full Name"
+          placeholder={t('Full Name')}
           value={form.fullName}
           onChange={(e) =>
             setForm({ ...form, fullName: e.target.value })
@@ -58,7 +60,7 @@ export default function Register() {
         <input
           className="input"
           type="email"
-          placeholder="Email"
+          placeholder={t('Email')}
           value={form.email}
           onChange={(e) =>
             setForm({ ...form, email: e.target.value })
@@ -68,7 +70,7 @@ export default function Register() {
 
         <input
           className="input"
-          placeholder="Phone Number"
+          placeholder={t('Phone Number')}
           value={form.phone}
           onChange={(e) =>
             setForm({ ...form, phone: e.target.value })
@@ -79,13 +81,13 @@ export default function Register() {
         <>
           <input
             className="input"
-            placeholder="Farm Location"
+            placeholder={t('Farm Location')}
             value={form.farmLocation}
             onChange={(e) => setForm({ ...form, farmLocation: e.target.value })}
           />
           <input
             className="input"
-            placeholder="Primary Crop"
+            placeholder={t('Primary Crop')}
             value={form.primaryCrop}
             onChange={(e) => setForm({ ...form, primaryCrop: e.target.value })}
           />
@@ -94,7 +96,7 @@ export default function Register() {
         <input
           className="input"
           type="password"
-          placeholder="Password"
+          placeholder={t('Password')}
           value={form.password}
           onChange={(e) =>
             setForm({ ...form, password: e.target.value })
@@ -103,7 +105,7 @@ export default function Register() {
         />
 
         <button type="submit" className="btn" disabled={isSubmitting}>
-          {isSubmitting ? 'Creating account...' : 'Register'}
+          {isSubmitting ? t('Creating account...') : t('Register')}
         </button>
       </form>
     </AuthFrame>

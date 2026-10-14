@@ -3,8 +3,10 @@ import { Upload, Ticket, FileText, Bot } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import StatCard from '../../components/StatCard.jsx';
 import { api } from '../../api/client.js';
+import { useLanguage } from '../../i18n/LanguageContext.jsx';
 
 export default function FarmerDashboard() {
+  const { t } = useLanguage();
   const [reports, setReports] = useState([]);
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -32,13 +34,13 @@ export default function FarmerDashboard() {
 
   return <div className="grid gap-4">
     <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-      <StatCard label="Disease scans" value={loading ? '...' : stats.diseaseScans} />
-      <StatCard label="Doctor support tickets" value={loading ? '...' : stats.supportTickets} />
-      <StatCard label="Resolved cases" value={loading ? '...' : stats.resolvedCases} />
-      <StatCard label="Doctor replies" value={loading ? '...' : stats.doctorReplies} />
+      <StatCard label={t('Disease scans')} value={loading ? '...' : stats.diseaseScans} />
+      <StatCard label={t('Doctor support tickets')} value={loading ? '...' : stats.supportTickets} />
+      <StatCard label={t('Resolved cases')} value={loading ? '...' : stats.resolvedCases} />
+      <StatCard label={t('Doctor replies')} value={loading ? '...' : stats.doctorReplies} />
     </div>
     <section className="panel">
-      <h3 className="text-xl font-semibold">Field Command Center</h3>
+      <h3 className="text-xl font-semibold">{t('Field Command Center')}</h3>
       <div className="mt-4 grid gap-3 md:grid-cols-4">
         {[
           ['Upload crop image', Upload, '/farmer/detect'],
@@ -46,7 +48,7 @@ export default function FarmerDashboard() {
           ['Disease reports', FileText, '/farmer/history'],
           ['Doctor recommendations', Bot, '/farmer/tickets'],
         ].map(([label, Icon, to]) => (
-          <Link key={label} to={to} className="rounded-md border border-white/10 bg-white/5 p-4 transition hover:border-field/40 hover:bg-white/10"><Icon className="mb-3 text-field" /><p>{label}</p></Link>
+          <Link key={label} to={to} className="rounded-md border border-white/10 bg-white/5 p-4 transition hover:border-field/40 hover:bg-white/10"><Icon className="mb-3 text-field" /><p>{t(label)}</p></Link>
         ))}
       </div>
     </section>

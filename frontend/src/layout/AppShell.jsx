@@ -13,6 +13,8 @@ import {
   Users,
 } from 'lucide-react';
 import { logout } from '../features/auth/authSlice.js';
+import LanguageSwitcher from '../components/LanguageSwitcher.jsx';
+import { useLanguage } from '../i18n/LanguageContext.jsx';
 
 const links = {
   ROLE_FARMER: [
@@ -44,6 +46,7 @@ export default function AppShell() {
   const user = useSelector((state) => state.auth.user);
   const dispatch = useDispatch();
   const role = user?.roles?.[0] || 'ROLE_FARMER';
+  const { t } = useLanguage();
 
   return (
     <div className="min-h-screen p-3 md:p-5">
@@ -55,8 +58,8 @@ export default function AppShell() {
             </div>
 
             <div>
-              <p className="text-sm text-white/60">AI Powered</p>
-              <h1 className="text-lg font-bold">CropCare Portal</h1>
+              <p className="text-sm text-white/60">{t('AI Powered')}</p>
+              <h1 className="text-lg font-bold">{t('CropCare Portal')}</h1>
             </div>
           </div>
 
@@ -74,7 +77,7 @@ export default function AppShell() {
                 }
               >
                 <Icon size={18} />
-                {label}
+                {t(label)}
               </NavLink>
             ))}
           </nav>
@@ -84,7 +87,7 @@ export default function AppShell() {
             onClick={() => dispatch(logout())}
           >
             <LogOut size={17} />
-            Logout
+            {t('Logout')}
           </button>
         </aside>
 
@@ -96,16 +99,17 @@ export default function AppShell() {
           <header className="mb-4 flex flex-col justify-between gap-3 rounded-lg border border-white/10 bg-white/5 p-4 md:flex-row md:items-center">
             <div>
               <p className="text-sm text-emerald-200">
-                Secure agriculture intelligence workspace
+                {t('Secure agriculture intelligence workspace')}
               </p>
               <h2 className="text-2xl font-semibold">
                 {user?.fullName}
               </h2>
             </div>
 
-            <span className="w-fit rounded-md border border-field/30 px-3 py-1 text-sm text-field">
-              {role.replace('ROLE_', '')}
-            </span>
+            <div className="flex items-center gap-3">
+              <LanguageSwitcher />
+              <span className="w-fit rounded-md border border-field/30 px-3 py-1 text-sm text-field">{t(role.replace('ROLE_', ''))}</span>
+            </div>
           </header>
 
           <Outlet />
