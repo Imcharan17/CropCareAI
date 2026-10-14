@@ -3,6 +3,7 @@ import { AlertCircle, Bot, CheckCircle2, Loader2, Send } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
 import { api } from '../../api/client.js';
 import { useLanguage } from '../../i18n/LanguageContext.jsx';
+import TranslatedText from '../../components/TranslatedText.jsx';
 
 export default function TicketTracking() {
   const { t } = useLanguage();
@@ -102,16 +103,16 @@ export function TicketTable({ tickets }) {
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
             <p className="text-sm text-white/45">Ticket #{ticket.id}</p>
-            <h4 className="mt-1 font-semibold">{ticket.title}</h4>
+            <h4 className="mt-1 font-semibold"><TranslatedText>{ticket.title}</TranslatedText></h4>
           </div>
           <div className="flex flex-wrap gap-2 text-xs">
-            <span className="rounded-full bg-emerald-400/10 px-3 py-1 text-emerald-200"><CheckCircle2 size={13} className="mr-1 inline" />{ticket.status}</span>
-            <span className="rounded-full bg-white/10 px-3 py-1 text-white/70">{ticket.priority}</span>
+            <span className="rounded-full bg-emerald-400/10 px-3 py-1 text-emerald-200"><CheckCircle2 size={13} className="mr-1 inline" />{t(ticket.status.replaceAll('_', ' '))}</span>
+            <span className="rounded-full bg-white/10 px-3 py-1 text-white/70">{t(ticket.priority)}</span>
             <span className="rounded-full bg-field/15 px-3 py-1 text-field">{ticket.doctorName && ticket.doctorName !== 'Unassigned' ? ticket.doctorName : t('Awaiting doctor')}</span>
           </div>
         </div>
-        {ticket.description && <p className="mt-3 whitespace-pre-line text-sm text-white/65">{ticket.description}</p>}
-        {ticket.treatmentRecommendation && <div className="mt-4 whitespace-pre-line rounded-md bg-black/20 p-3 text-sm text-white/78">{ticket.treatmentRecommendation}</div>}
+        {ticket.description && <p className="mt-3 whitespace-pre-line text-sm text-white/65"><TranslatedText>{ticket.description}</TranslatedText></p>}
+        {ticket.treatmentRecommendation && <div className="mt-4 whitespace-pre-line rounded-md bg-black/20 p-3 text-sm text-white/78"><TranslatedText>{ticket.treatmentRecommendation}</TranslatedText></div>}
       </article>)}
       {!tickets.length && <p className="text-sm text-white/50">{t('No tickets raised yet.')}</p>}
     </div>

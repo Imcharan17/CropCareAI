@@ -5,6 +5,7 @@ import { Stomp } from 'stompjs/lib/stomp.js';
 import { useSelector } from 'react-redux';
 import { api } from '../../api/client.js';
 import { useLanguage } from '../../i18n/LanguageContext.jsx';
+import TranslatedText from '../../components/TranslatedText.jsx';
 
 export default function Chat() {
   const { t } = useLanguage();
@@ -62,7 +63,7 @@ export default function Chat() {
       <span className={online ? 'text-sm text-emerald-300' : 'text-sm text-white/45'}>{online ? t('Online') : t('Connecting')}</span>
     </div>
     <div className="grid content-start gap-3 overflow-y-auto py-4">
-      {messages.map((message) => <div key={message.id} className="max-w-xl rounded-lg bg-white/10 p-3"><p className="text-xs text-emerald-200">{message.senderName}</p><p>{message.message}</p><p className="mt-1 text-xs text-white/40">{new Date(message.createdAt).toLocaleString()}</p></div>)}
+      {messages.map((message) => <div key={message.id} className="max-w-xl rounded-lg bg-white/10 p-3"><p className="text-xs text-emerald-200">{message.senderName}</p><p><TranslatedText>{message.message}</TranslatedText></p><p className="mt-1 text-xs text-white/40">{new Date(message.createdAt).toLocaleString()}</p></div>)}
       {!messages.length && <p className="text-sm text-white/50">{t('No messages in this ticket yet.')}</p>}
     </div>
     <form onSubmit={send} className="flex gap-3"><input className="input" value={draft} onChange={(event) => setDraft(event.target.value)} placeholder={t('Write a message')} /><button className="btn" disabled={!online || !ticketId}><Send size={17} /> {t('Send')}</button></form>

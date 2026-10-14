@@ -3,6 +3,7 @@ import { Eye, LifeBuoy, Search } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../../api/client.js';
 import { useLanguage } from '../../i18n/LanguageContext.jsx';
+import TranslatedText from '../../components/TranslatedText.jsx';
 
 const emptyFilters = { crop: '', disease: '', status: '', from: '', to: '' };
 
@@ -52,7 +53,7 @@ export default function DiseaseHistory() {
           <div>
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
-                <h4 className="font-semibold">{item.cropName} - {item.diseaseName}</h4>
+                <h4 className="font-semibold"><TranslatedText>{item.cropName} - {item.diseaseName}</TranslatedText></h4>
                 <p className="mt-1 text-sm text-white/55">{new Date(item.detectionDate).toLocaleString()}</p>
               </div>
               <div className="flex gap-2 text-xs">
@@ -61,7 +62,7 @@ export default function DiseaseHistory() {
                 <span className="rounded-full bg-emerald-400/10 px-3 py-1 text-emerald-100">{item.currentStatus}</span>
               </div>
             </div>
-            <p className="mt-3 text-sm text-white/75">{item.aiRecommendationSummary || item.treatmentSummary}</p>
+            <p className="mt-3 text-sm text-white/75"><TranslatedText>{item.aiRecommendationSummary || item.treatmentSummary}</TranslatedText></p>
             <div className="mt-4 flex flex-wrap gap-2">
               <button className="btn-ghost" onClick={() => openDetails(item.reportId)}><Eye size={16} /> {t('View Details')}</button>
               {!item.ticketStatus && <button className="btn" onClick={() => navigate('/farmer/tickets', { state: { diseaseReportId: item.reportId } })}><LifeBuoy size={16} /> {t('Raise Support Ticket')}</button>}
@@ -99,7 +100,7 @@ function Details({ report, onClose }) {
 }
 
 function Info({ label, value }) {
-  return <div className="rounded-md bg-white/5 p-3"><p className="text-sm text-white/50">{label}</p><p className="mt-1 whitespace-pre-line text-white/85">{value || 'Not available'}</p></div>;
+  return <div className="rounded-md bg-white/5 p-3"><p className="text-sm text-white/50">{label}</p><p className="mt-1 whitespace-pre-line text-white/85"><TranslatedText>{value || 'Not available'}</TranslatedText></p></div>;
 }
 
 function unique(items, key) {

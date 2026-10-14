@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { AlertCircle, CheckCircle2, Loader2, UserRoundCheck } from 'lucide-react';
 import { api } from '../../api/client.js';
 import { useLanguage } from '../../i18n/LanguageContext.jsx';
+import TranslatedText from '../../components/TranslatedText.jsx';
 
 export default function AssignedTickets() {
   const { t } = useLanguage();
@@ -84,7 +85,7 @@ export default function AssignedTickets() {
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
               <p className="text-sm text-white/45">Ticket #{ticket.id} · {ticket.priority} priority</p>
-              <h4 className="mt-1 font-semibold">{ticket.title}</h4>
+              <h4 className="mt-1 font-semibold"><TranslatedText>{ticket.title}</TranslatedText></h4>
               <p className="mt-1 text-sm text-white/55">{t('Farmer:')} {ticket.farmerName}</p>
             </div>
             <div className="flex flex-wrap items-center gap-2 text-xs">
@@ -93,8 +94,8 @@ export default function AssignedTickets() {
             </div>
           </div>
 
-          {ticket.description && <p className="mt-4 whitespace-pre-line text-sm text-white/75">{ticket.description}</p>}
-          {ticket.treatmentRecommendation && <div className="mt-4 whitespace-pre-line rounded-md bg-black/20 p-3 text-sm text-white/65"><span className="font-medium text-white/80">{t('Preliminary AI notes')}</span><br />{ticket.treatmentRecommendation}</div>}
+          {ticket.description && <p className="mt-4 whitespace-pre-line text-sm text-white/75"><TranslatedText>{ticket.description}</TranslatedText></p>}
+          {ticket.treatmentRecommendation && <div className="mt-4 whitespace-pre-line rounded-md bg-black/20 p-3 text-sm text-white/65"><span className="font-medium text-white/80">{t('Preliminary AI notes')}</span><br /><TranslatedText>{ticket.treatmentRecommendation}</TranslatedText></div>}
 
           {unassigned ? <button className="btn mt-4" type="button" onClick={() => claim(ticket.id)} disabled={busyId === ticket.id}>
             {busyId === ticket.id ? <><Loader2 className="animate-spin" size={17} /> {t('Claiming')}</> : <><UserRoundCheck size={17} /> {t('Claim case')}</>}

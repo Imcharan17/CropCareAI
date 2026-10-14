@@ -51,12 +51,6 @@ public class GeminiVisionProvider implements DiseaseDetectionProvider {
 
     @Override
     public DiseasePredictionResponse predict(MultipartFile image) {
-        System.out.println("========================================");
-System.out.println("File Name   : " + image.getOriginalFilename());
-System.out.println("Content Type: " + image.getContentType());
-System.out.println("File Size   : " + image.getSize());
-System.out.println("Is Empty    : " + image.isEmpty());
-System.out.println("========================================");
         if (!StringUtils.hasText(apiKey)) {
             throw new AiPredictionException("Gemini API key is not configured. Set GEMINI_API_KEY or use APP_AI_PROVIDER=mock.");
         }
@@ -70,27 +64,23 @@ System.out.println("========================================");
                     .build();
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             if (response.statusCode() < 200 || response.statusCode() >= 300) {
-
-    System.out.println("========================================");
-    System.out.println("STATUS : " + response.statusCode());
-    System.out.println("BODY   : ");
-    System.out.println(response.body());
-    System.out.println("========================================");
-
-    throw new RuntimeException(response.body());
-}
+                log.warn("Gemini image detection returned HTTP {}", response.statusCode());
+                if (response.statusCode() == 429) {
+                    throw new AiPredictionException("AI detection is temporarily rate limited. Please wait and retry.");
+                }
+                if (response.statusCode() == 400 || response.statusCode() == 403) {
+                    throw new AiPredictionException("Gemini rejected the request. Check the API key, model access, and uploaded image format.");
+                }
+                throw new AiPredictionException("The image analysis service returned an error. Please retry shortly.");
+            }
             return toPrediction(response.body());
-        }catch (IOException ex) {
-
-    System.out.println("========== IO EXCEPTION ==========");
-    ex.printStackTrace();
-    throw new RuntimeException(ex);
-
-} catch (InterruptedException ex) {
-
-    Thread.currentThread().interrupt();
-    throw new AiPredictionException("AI prediction was interrupted", ex);
-}
+        } catch (IOException ex) {
+            log.warn("Could not send or parse Gemini image detection request: {}", ex.getMessage());
+            throw new AiPredictionException("Could not analyze the image response. Please retry with a clear JPG or PNG image.", ex);
+        } catch (InterruptedException ex) {
+            Thread.currentThread().interrupt();
+            throw new AiPredictionException("AI prediction was interrupted", ex);
+        }
     }
 
     @Override
@@ -109,7 +99,7 @@ System.out.println("========================================");
                 "contents", List.of(Map.of("parts", List.of(
                         Map.of("text", prompt()),
                         Map.of("inline_data", Map.of(
-                                "mime_type", image.getContentType(),
+                                "mime_type", "image/jpg".equalsIgnoreCase(image.getContentType()) ? "image/jpeg" : image.getContentType(),
                                 "data", Base64.getEncoder().encodeToString(image.getBytes())
                         ))
                 ))),
@@ -126,9 +116,6 @@ System.out.println("========================================");
     private DiseasePredictionResponse toPrediction(String responseBody) throws JsonProcessingException {
         JsonNode root = objectMapper.readTree(responseBody);
         String text = root.path("candidates").path(0).path("content").path("parts").path(0).path("text").asText();
-        System.out.println("========== GEMINI RESPONSE ==========");
-System.out.println(text);
-System.out.println("=====================================");
         if (!StringUtils.hasText(text)) {
             throw new AiPredictionException("AI prediction response was empty. Please retry.");
         }

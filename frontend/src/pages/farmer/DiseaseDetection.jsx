@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { AlertCircle, CheckCircle2, Loader2, RefreshCw, UploadCloud } from 'lucide-react';
 import { api } from '../../api/client.js';
 import { useLanguage } from '../../i18n/LanguageContext.jsx';
+import TranslatedText from '../../components/TranslatedText.jsx';
 
 export default function DiseaseDetection() {
   const { t } = useLanguage();
@@ -44,10 +45,13 @@ export default function DiseaseDetection() {
     const form = new FormData();
     form.append('image', image);
     try {
-      const { data } = await api.post('/disease/detect', form, { headers: { 'Content-Type': 'multipart/form-data' } });
+      const { data } = await api.post('/disease/detect', form);
       setResult(data);
     } catch (err) {
-      setError(err.response?.data?.message || t('AI detection failed. Please retry with a clear crop image.'));
+      const status = err.response?.status;
+      setError(status === 413
+        ? t('Image must be 10MB or smaller.')
+        : err.response?.data?.message || t('AI detection failed. Please retry with a clear crop image.'));
     } finally {
       setLoading(false);
     }
@@ -89,11 +93,11 @@ function PredictionResult({ result, onRaiseTicket }) {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <p className="text-white/55">{t('Primary prediction')}</p>
-          <h4 className="mt-1 text-2xl font-semibold">{result.diseaseName}</h4>
+          <h4 className="mt-1 text-2xl font-semibold"><TranslatedText>{result.diseaseName}</TranslatedText></h4>
         </div>
         <div className="flex items-center gap-2 rounded-full bg-black/20 px-3 py-2 text-emerald-100"><CheckCircle2 size={18} /> {confidence}% {t('confidence')}</div>
       </div>
-      <p className="mt-3 text-white/70">{result.diseaseDescription}</p>
+      <p className="mt-3 text-white/70"><TranslatedText>{result.diseaseDescription}</TranslatedText></p>
       <div className="mt-4 grid gap-3 sm:grid-cols-2">
         <Info label="Severity" value={result.severityLevel} />
         <Info label="Affected area" value={result.affectedArea} />
@@ -114,7 +118,7 @@ function PredictionResult({ result, onRaiseTicket }) {
       <p className="text-white/50">{t('Possible matches')}</p>
       <div className="mt-3 grid gap-2">
         {result.predictions.map((item, index) => <div key={`${item.diseaseName}-${index}`} className="flex flex-wrap justify-between gap-2 rounded-md bg-black/15 p-3">
-          <span className="font-medium">{item.diseaseName}</span>
+          <span className="font-medium"><TranslatedText>{item.diseaseName}</TranslatedText></span>
           <span className="text-field">{Math.round((item.confidenceScore || 0) * 100)}% - {item.severityLevel}</span>
         </div>)}
       </div>
@@ -126,7 +130,7 @@ function Info({ label, value }) {
   const { t } = useLanguage();
   return <div className="rounded-md bg-white/5 p-3">
     <p className="text-white/50">{label}</p>
-    <p className="mt-1 font-medium text-white/85">{value || t('Not available')}</p>
+    <p className="mt-1 font-medium text-white/85"><TranslatedText>{value || t('Not available')}</TranslatedText></p>
   </div>;
 }
 
@@ -134,7 +138,7 @@ function ListBlock({ title, items = [] }) {
   return <div className="rounded-md bg-white/5 p-3">
     <p className="text-white/50">{title}</p>
     {items.length ? <ul className="mt-2 grid gap-1 text-white/85">
-      {items.map((item) => <li key={item}>- {item}</li>)}
+      {items.map((item) => <li key={item}>- <TranslatedText>{item}</TranslatedText></li>)}
     </ul> : <p className="mt-1 text-white/60">Not available</p>}
   </div>;
 }
