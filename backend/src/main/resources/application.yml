@@ -8,9 +8,9 @@ spring:
     name: crop-disease-portal
 
   datasource:
-    # Allow platforms/containers to provide a complete JDBC URL. Render's
-    # Blueprint supplies DB_HOST/DB_PORT/DB_NAME instead, so retain that fallback.
-    url: ${SPRING_DATASOURCE_URL:${DB_URL:jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:crop_care}}}
+    # DB_URL is often a plain postgresql:// URI (not JDBC). Build a JDBC URL
+    # from the discrete DB_* values instead; SPRING_DATASOURCE_URL can override it.
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:crop_care}?sslmode=require}
     username: ${DB_USERNAME:postgres}
     password: ${DB_PASSWORD:}
     driver-class-name: org.postgresql.Driver
