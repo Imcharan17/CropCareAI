@@ -51,3 +51,8 @@ app:
 springdoc:
   swagger-ui:
     path: /swagger-ui.htm
+
+management:
+  health:
+    mail:
+      enabled: false
